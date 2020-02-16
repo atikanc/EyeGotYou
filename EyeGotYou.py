@@ -26,15 +26,18 @@ while (True):
         cv.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
         last_detection = dt.datetime.now()
         if recent_lock:
+            print("[", dt.datetime.now(), "] =>", "Eyes Detected Again")
             keyboard.press(Key.media_play_pause)
             keyboard.release(Key.media_play_pause)
+            print("[ Accessibility ] => Media Playback Triggered (Play)")
             recent_lock = bool(0)
 
     if((dt.datetime.now() - last_detection) > threshold):
-        print("No eyes for", dt.datetime.now() - last_detection)
+        print("[", dt.datetime.now(), "] =>", "No eyes for", dt.datetime.now() - last_detection)
         if not recent_lock:
             keyboard.press(Key.media_play_pause)
             keyboard.release(Key.media_play_pause)
+            print("[ Accessibility ] => Media Playback Triggered (Pause)")
             os.system('rundll32.exe user32.dll,LockWorkStation')
             sleep(5)
             recent_lock = bool(1)
