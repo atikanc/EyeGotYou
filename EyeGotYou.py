@@ -3,12 +3,14 @@ import sys
 import datetime as dt
 from time import sleep
 import os
+from pynput.keyboard import Key, Controller
 
 faceCas = cv.CascadeClassifier("haarcascades/haarcascade_eye.xml")
 cam = cv.VideoCapture(0)
 last_detection = dt.datetime.now()
 threshold = dt.timedelta(seconds=10)
-recent_lock = bool(1)
+recent_lock = bool(0)
+keyboard = Controller()
 
 while (True):
     sleep(0.2)
@@ -23,11 +25,16 @@ while (True):
     for (x, y, w, h) in faces:
         cv.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
         last_detection = dt.datetime.now()
-        recent_lock = bool(0)
+        if recent_lock:
+            keyboard.press(Key.media_play_pause)
+            keyboard.release(Key.media_play_pause)
+            recent_lock = bool(0)
 
     if((dt.datetime.now() - last_detection) > threshold):
         print("No eyes for", dt.datetime.now() - last_detection)
         if not recent_lock:
+            keyboard.press(Key.media_play_pause)
+            keyboard.release(Key.media_play_pause)
             os.system('rundll32.exe user32.dll,LockWorkStation')
             sleep(5)
             recent_lock = bool(1)
